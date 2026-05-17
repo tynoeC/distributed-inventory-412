@@ -6,8 +6,10 @@ import java.io.IOException;
 
 public class DataGenerator {
     public static void main(String[] args){
+        //Seeded file content using random based on the stdId
         Random randStd = new Random(22202963);
-
+        
+        //Files paths and categories
         String[] categories = {"Electronics", "Groceries", "Books", "Clothing"};
         String[] paths = {
             "src/inventory/Electronics.txt",
@@ -16,6 +18,8 @@ public class DataGenerator {
             "src/inventory/Clothing.txt"
         };
         
+        //A loop that goes through each category
+        //writing the actual file using PrintWriter to create each .txt and product lines into it
         for (int i = 0; i < 4; i++){
             System.out.println(categories[i]);
             try(PrintWriter pw = new PrintWriter(new FileWriter(paths[i]))){
@@ -27,6 +31,7 @@ public class DataGenerator {
 
                     pw.println(prodID + ", " + prodName + ", " + price + ".00");
                 }
+                //special record to be printed in each file
                 pw.println("P9999, " + "Student_22202963_Demo, " + 0.01);
             }
             catch (IOException e){

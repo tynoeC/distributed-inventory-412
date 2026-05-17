@@ -4,13 +4,16 @@ import java.net.*;
 import java.util.Map;
 import java.util.concurrent.*;
 
+//Handles communication btwn server and client
 public class ClientHandler implements Runnable{
     private Socket clientSocket;
 
+    //constructor to initialise client socket
     public ClientHandler(Socket socket){
         this.clientSocket = socket;
     }
     public void run(){
+        //Output stream sends messages to the client
         try (PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)){
             File inventoryDir = new File("src/inventory/");
         
@@ -31,8 +34,10 @@ public class ClientHandler implements Runnable{
                 }
             }
         }
+        //sends available inventory file names to client 
         out.println(fileListBuilder.toString());
 
+        //input stream to receive commands from client
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String clientCommand;
         while ((clientCommand = in.readLine()) != null) {
@@ -50,6 +55,7 @@ public class ClientHandler implements Runnable{
                     out.println("Unable to read file");
                 }
             } 
+            //handles overview commands 
             else if ("OVERVIEW".equalsIgnoreCase(command)){
                 ConcurrentHashMap<String, Double> mergedMap = new ConcurrentHashMap<>();
                 ExecutorService executor = Executors.newFixedThreadPool(4);
@@ -61,7 +67,7 @@ public class ClientHandler implements Runnable{
                 
                 executor.shutdown();
 
-                try {
+                try { //waits for all threads to finish
                     if(executor.awaitTermination(60, TimeUnit.SECONDS)){
                         System.out.println("All threads finished. Map size: " + mergedMap.size());
                         if(mergedMap.isEmpty()){
@@ -109,7 +115,7 @@ public class ClientHandler implements Runnable{
                     out.println("Error: Server processing interrupted");
                     Thread.currentThread().interrupt();
                 }
-            }
+            }//handles the verify command
             else if ("VERIFY".equalsIgnoreCase(command)){
                 int digitSum = 26; //sum of 22202963
                 int port = clientSocket.getLocalPort();
@@ -132,9 +138,12 @@ public class ClientHandler implements Runnable{
             e.printStackTrace();
         }
     }
+    //writes merged inventory data into a file
     private void writeMergedFile(ConcurrentHashMap<String, Double> mergedMap){
+        //where merged inventory will be saved
         File targetFile = new File("src/inventory/", "MergedInventory.txt");
         try(PrintWriter fileOut = new PrintWriter(new FileWriter(targetFile))){
+            //writting each product and price into the file
             for (Map.Entry<String, Double> entry : mergedMap.entrySet()){
                 String productID = entry.getKey();
                 double price = entry.getValue();
