@@ -83,9 +83,11 @@ src/
 ├── server/
 │   ├── ServerGUI.java
 │   ├── ClientHandler.java
+    ├── InventoryServer.java
 │   └── FileReaderTask.java
 │
 └── inventory/
+    ├── DataGeneration.java
     ├── Electronics.txt
     ├── Groceries.txt
     ├── Books.txt
