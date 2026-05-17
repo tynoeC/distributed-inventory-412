@@ -93,6 +93,9 @@ public class ClientHandler implements Runnable{
                             out.println("Highest Price: " + highestName + " ($" + String.format("%.2f", highest) + ")");
                             out.println("Lowest Price: " + lowestName + " ($" + String.format("%.2f", lowest) + ")");
 
+                            writeMergedFile(mergedMap);
+                    
+
                             out.println("END");
                         }
                     }
@@ -127,6 +130,22 @@ public class ClientHandler implements Runnable{
         }
         catch(IOException e){
             e.printStackTrace();
+        }
+    }
+    private void writeMergedFile(ConcurrentHashMap<String, Double> mergedMap){
+        File targetFile = new File("src/inventory/", "MergedInventory.txt");
+        try(PrintWriter fileOut = new PrintWriter(new FileWriter(targetFile))){
+            for (Map.Entry<String, Double> entry : mergedMap.entrySet()){
+                String productID = entry.getKey();
+                double price = entry.getValue();
+
+                fileOut.println(productID + ", " + String.format("%.2f", price));
+
+            }
+            System.out.println("Successfully generated MergedInventory.txt on server");
+
+        }catch(IOException e){
+            System.err.println("Failed to write merged inventory file: " + e.getMessage());
         }
     }
 }
